@@ -5,9 +5,9 @@
 #' 
 #' Bjorn Sandvik's data are protected by a CC-SA license.
 #'
-#' @param None
-#' @return Used for its side effect. Declares a global variable worldSimple of class SpatialPolygonsDataFrame.
-#' @export
+#' @name worldSimple-data
+#' @aliases worldSimple
+#' @docType data
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
 #' @examples
 #' data(worldSimple)
