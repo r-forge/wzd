@@ -2,18 +2,20 @@
 # TODO work with environments or wrapper function
 
 if (!require(xts)) stop("Could not load required library xts")
-incomePerCapitaCsv <- "gmIncomePerCapita.csv"
-if (!file.exists(incomePerCapitaCsv)) {
-  incomePerCapitaUrl <- 
-  if (download.file("http://spreadsheets.google.com/pub?key=phAwcNAVuyj1jiMAkmq1iMg&gid=0&output=csv", 
-                incomePerCapitaCsv, 
-                method="internal")!=0) stop("Could not download dataset.")
-}
-incomePerCapitaRaw <- read.csv(incomePerCapitaCsv, encoding="UTF-8")
-incomePerCapitaTransformed <- t(as.matrix(incomePerCapitaRaw[,2:ncol(incomePerCapitaRaw)]))
-colnames(incomePerCapitaTransformed) <- incomePerCapitaRaw[,1]
-gmIncomePerCapita <- xts(incomePerCapitaTransformed, 
-    order.by=as.Date(paste(colnames(incomePerCapitaRaw)[2:ncol(incomePerCapitaRaw)],"-06-15", sep=""), format="X%Y-%m-%d"))
-rm(incomePerCapitaRaw)
-rm(incomePerCapitaTransformed)
+
+gmIncomePerCapita <- local({
+  incomePerCapitaCsv <- "gmIncomePerCapita.csv"
+  if (!file.exists(incomePerCapitaCsv)) {
+    incomePerCapitaUrl <- 
+    if (download.file("http://spreadsheets.google.com/pub?key=phAwcNAVuyj1jiMAkmq1iMg&gid=0&output=csv", 
+                  incomePerCapitaCsv, 
+                  method="internal")!=0) stop("Could not download dataset.")
+  }
+  incomePerCapitaRaw <- read.csv(incomePerCapitaCsv, encoding="UTF-8")
+  incomePerCapitaTransformed <- t(as.matrix(incomePerCapitaRaw[,2:ncol(incomePerCapitaRaw)]))
+  colnames(incomePerCapitaTransformed) <- incomePerCapitaRaw[,1]
+  xts(incomePerCapitaTransformed, 
+      order.by=as.Date(paste(colnames(incomePerCapitaRaw)[2:ncol(incomePerCapitaRaw)],"-06-15", sep=""), format="X%Y-%m-%d"))
+})
+
 
