@@ -9,7 +9,4 @@
 #' @aliases worldSimple
 #' @docType data
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-#' @examples
-#' data(worldSimple)
-#' spplot(worldSimple, "POP2005")
 NULL
