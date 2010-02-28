@@ -1,12 +1,43 @@
 Package: wzd
 Type: Package
 Title: Accompanying package to the blog wagezudenken.blogspot.com
-Version: 0.1.1
+Version: 0.1.2
 Date: 2010-02-21
 Author: Karsten Weinert
 Maintainer: Karsten Weinert <k.weinert@gmx.net>
-Description: The package features datasets from various topics, data visualizations including cartography, statistical methods and tools;
-    as discussed on the blog.
+Description: The package features datasets from various topics, data
+    visualizations including cartography, statistical methods and tools; as
+    discussed on the blog.
 License: GPL (>= 3)
 LazyLoad: yes
-Collate: 'inkblot.R' 'RweaveMWiki.R' 'worldSimple-data.R' 'wzd-package.R'
+Depends: xts
+Collate: 'gmAdolescentFertilityRate-data.R' 'gmArmsExports-data.R'
+    'gmArmsImports-data.R' 'gmBadTeethPerChild-data.R'
+    'gmBiomassStockInForest-data.R'
+    'gmBirthsAttendedBySkilledHealthStaff-data.R'
+    'gmBroadbandSubscribers-data.R' 'gmCellPhones-data.R'
+    'gmCO2Emissions-data.R' 'gmCoalConsumption-data.R'
+    'gmCoalProduction-data.R' 'gmConsumerPricesIndex-data.R'
+    'gmContraceptiveUse-data.R' 'gmCrudeBirthRate-data.R'
+    'gmCrudeDeathRate-data.R' 'gmElectricityGeneration-data.R' 'gmGDP-data.R'
+    'gmGDPImplicitDeflator-data.R' 'gmGiniIndex-data.R'
+    'gmHumanDevelopmentIndex-data.R' 'gmHydroelectricityConsumption-data.R'
+    'gmIncomePerCapita-data.R' 'gmInfantMortalityRate-data.R'
+    'gmLifeExpectancyAtBirth-data.R' 'gmMalariaReportedCases-data.R'
+    'gmMalariaReportedDeaths-data.R' 'gmMaternalMortalityRate-data.R'
+    'gmNaturalGasConsumption-data.R' 'gmNaturalGasProduction-data.R'
+    'gmNuclearConsumption-data.R' 'gmNumberOfBillionaires-data.R'
+    'gmOilConsumption-data.R' 'gmOilProduction-data.R'
+    'gmPatentApplications-data.R' 'gmPatentsGranted-data.R'
+    'gmPatentsInForce-data.R' 'gmPeopleLivingWithHIV-data.R'
+    'gmPerCapitaCO2Emissions-data.R' 'gmPersonalComputers-data.R'
+    'gmPlantedForestArea-data.R' 'gmPopulation-data.R'
+    'gmPopulationGrowth-data.R' 'gmPrimaryEnergyConsumption-data.R'
+    'gmPrimaryForestArea-data.R' 'gmSugarConsumption-data.R'
+    'gmSulfurEmissions-data.R' 'gmSurfaceArea-data.R'
+    'gmTotalFertilityRate-data.R' 'gmTotalForestArea-data.R'
+    'gmTotalWaterWithdrawal-data.R' 'gmUnder5MortalityRate-data.R'
+    'gmUrbanPopulation-data.R' 'gmWomensAgeAtFirstMarriage-data.R'
+    'gmWoodRemoval-data.R' 'gmWorkingHoursPerWeek-data.R' 'inkblot.R'
+    'loadGapMinderDataset.R' 'RweaveMWiki.R' 'worldSimple-data.R'
+    'wzd-package.R'

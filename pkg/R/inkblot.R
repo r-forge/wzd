@@ -9,21 +9,22 @@
 #' @param col.value color for the displayed values (default 24)
 #' @param col.category color for the category (default 17)
 #' @param major.ticks where to put the x axis ticks and labels (default "auto")
-#' @param major.format how to format the x axis labels (default "%Y") 
+#' @param major.format how to format the x axis labels (default "\%Y") 
 #' @param ... additional parameters to plot
 #' @return Used for its side effect (plotting)
 #' @references
 #' \url{http://stackoverflow.com/questions/2161052/how-to-create-an-inkblot-chart-with-r}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-inkblot <- function(series, col=NULL, min.height=40, col.value=24, col.category=17, major.ticks = "auto", 
-    minor.ticks = TRUE, major.format="%Y", ...) {  
+inkblot <- function(series, col=NULL, min.height=40, col.value=24, col.category=17, major.ticks = "auto", major.format="", ...) {  
   # assumes non-negative values  
   # assumes that series is multivariate series  
   # assumes that series names are set, i.e. colnames(series) != NULL  
 
   oldpar = par(no.readonly = TRUE); on.exit(par(oldpar))
   par(mar=c(3,3,0,10)+0.1, cex=0.7)  
+  
+  if (major.format=="") major.format="%Y" # hack for roxygen
 
   if(length(col)==0){  
     col <- rainbow(dim(series)[2])  
