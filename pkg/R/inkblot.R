@@ -6,6 +6,9 @@
 #' @param series a xts object
 #' @param col vector of colors to use (default NULL)
 #' @param min.height minimal height of one category in the same unit as y (default 40)
+#' @param grid logical (default TRUE); whether to draw vertical grid lines
+#' @param lty.grid line style for grid lines (default "dashed")
+#' @param col.grid color of grid lines (default "lightgrey")
 #' @param col.value color for the displayed values (default 24)
 #' @param col.category color for the category (default 17)
 #' @param major.ticks where to put the x axis ticks and labels (default "auto")
@@ -16,7 +19,7 @@
 #' \url{http://stackoverflow.com/questions/2161052/how-to-create-an-inkblot-chart-with-r}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-inkblot <- function(series, col=NULL, min.height=40, col.value=24, col.category=17, major.ticks = "auto", major.format="", ...) {  
+inkblot <- function(series, col=NULL, min.height=40, grid=TRUE, lty.grid="dashed", col.grid="lightgrey", col.value=24, col.category=17, major.ticks = "auto", major.format="", ...) {  
   # assumes non-negative values  
   # assumes that series is multivariate series  
   # assumes that series names are set, i.e. colnames(series) != NULL  
@@ -41,6 +44,7 @@ inkblot <- function(series, col=NULL, min.height=40, col.value=24, col.category=
   plot(x, 1:length(x), type="n", ylim=c(0,1)*ytotal, yaxt="n", xaxt="n", bty="n", ylab="", xlab="", ...) 
   ep <- axTicksByTime(series, major.ticks, format = major.format, format)
   axis(side=1, at = x[ep], labels = names(ep), las = 1, lwd = 1, mgp = c(3, 1, 0))
+  if (grid) abline(v=x[ep], col=col.grid, lty=lty.grid)
 
   catNumber <- 1  
   offset <- 0  
