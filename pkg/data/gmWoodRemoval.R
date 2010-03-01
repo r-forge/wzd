@@ -4,6 +4,8 @@ gmWoodRemoval <- local({
   if (!file.exists(dataCsv))
     if (download.file('http://spreadsheets.google.com/pub?key=pp59adS3CHWe8O-N9RgxzDw&gid=0&output=csv', dataCsv, method='internal')!=0) stop('Could not download dataset.')
   dataRaw <- read.csv(dataCsv, encoding='UTF-8', na.strings=c('..', '-'), stringsAsFactor=FALSE)
+  delete <- is.null(getOption('wzd.cache.gapminder')) || getOption('wzd.cache.gapminder')==FALSE
+  if (delete) file.remove(dataCsv)
   dataTransformed <- t(as.matrix(dataRaw[,2:ncol(dataRaw)]))
     dimSaved <- dim(dataTransformed)
     dataTransformed <- as.numeric(gsub(',', '', dataTransformed))
