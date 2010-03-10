@@ -13,13 +13,17 @@
 #' @param col.category color for the category (default 17)
 #' @param major.ticks where to put the x axis ticks and labels (default "auto")
 #' @param major.format how to format the x axis labels (default "\%Y") 
+#' @param num.format sprintf format string for the numbers (default "%5.0f")
 #' @param ... additional parameters to plot
 #' @return Used for its side effect (plotting)
 #' @references
 #' \url{http://stackoverflow.com/questions/2161052/how-to-create-an-inkblot-chart-with-r}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-inkblot <- function(series, col=NULL, min.height=40, grid=TRUE, lty.grid="dashed", col.grid="lightgrey", col.value=24, col.category=17, major.ticks = "auto", major.format="", ...) {  
+inkblot <- function(series, col=NULL, min.height=40, grid=TRUE, lty.grid="dashed", 
+                    col.grid="lightgrey", col.value=24, col.category=17, 
+                    major.ticks = "auto", major.format="",
+                    num.format = "%5.0f", ...) {  
   # assumes non-negative values  
   # assumes that series is multivariate series  
   # assumes that series names are set, i.e. colnames(series) != NULL  
@@ -52,9 +56,9 @@ inkblot <- function(series, col=NULL, min.height=40, grid=TRUE, lty.grid="dashed
     y <- 0.5 * as.vector(series[,category])  
     offset <- offset + max(max(abs(y[!is.na(y)])), 0.5*min.height)  
     polygon(c(x, rev(x)), c(offset+y, offset-rev(y)), col=col[catNumber], border=NA)  
-    mtext(text=round(y[1]), side=2, at=offset, las=2, cex=0.7, col=col.value)  
-    mtext(text=round(y[length(y)]), side=4, line=-1, at=offset, las=2, cex=0.7, col=col.value)  
-    mtext(text=category, side=4, line=2, at=offset, las=2, cex=0.7, col=col.category)  
+    mtext(text=sprintf(num.format, y[1]), side=2, at=offset, las=2, cex=0.7, col=col.value)  
+    mtext(text=sprintf(num.format, y[length(y)]), side=4, line=2, at=offset, las=2, adj=1, cex=0.7, col=col.value)  
+    mtext(text=paste(" ",category, sep=""), side=4, line=2, at=offset, las=2, adj=0, cex=0.7, col=col.category)  
     offset <- offset + max(max(abs(y[!is.na(y)])), 0.5*min.height)  
     catNumber <- catNumber + 1   
   }  
