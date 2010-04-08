@@ -1,0 +1,109 @@
+# -*- coding: iso8859_15 -*-
+import os
+import os.path
+import re
+from time import strftime, localtime
+
+import logging
+#logging.basicConfig(level=logging.WARNING, format='%(levelname)-8s %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
+deb = logging.debug
+
+########## Roxygen: Rd files, NAMESPACE, DESCRIPTION
+
+import rpy2.robjects as robjects #do not change working directory in your .Rprofile!
+# setup roxygen 
+robjects.r.library("roxygen")
+robjects.r('Rd <- roxygen::make.Rd2.roclet("./man")')
+robjects.r('namespace <- roxygen::make.namespace.roclet("NAMESPACE")')
+
+Help("""
+Rd
+    input file type: .R (R code)
+    produced file type: .Rd
+""")
+
+def RoxygenRd(target, source, env):
+    """autodocument R file using in-code comments and roxygen."""
+    #sourceDir = os.path.abspath(env.subst("${SOURCE.srcdir}", target=target, source=source))
+    rFile = str(source[0]).replace("\\", "/")
+    deb("generating documentation for >"+rFile+"<")
+    #robjects.r.setwd(sourceDir) ## change to current dir
+    robjects.r('Rd$parse("%s")' % rFile)   
+
+        
+RdBuilder = Builder(action = RoxygenRd,
+                    suffix = '.Rd',
+                    src_suffix = '.R')
+                    
+def RoxygenNamespace(target, source, env):
+    """create NAMESPACE file using roxygen."""
+    if len(source)==0: return
+    #sourceDir = os.path.abspath(env.subst("${SOURCE.srcdir}", target=target, source=source))
+    rFiles = '","'.join([str(s).replace("\\", "/") for s in source])
+    deb("generating NAMESPACE for >"+rFiles+"<")
+    #robjects.r.setwd(sourceDir) ## change to current dir
+    robjects.r('do.call(namespace$parse, as.list(c("%s")))' % rFiles)   
+    
+NamespaceBuilder = Builder(action = RoxygenNamespace)
+                        
+deb("Roxygen-Tools deklariert")
+
+############# DESCRIPTION file
+
+def updateDescription(target, source, env):
+    """update date and version fields"""
+    fname = str(target[0])
+    infile = open(fname, "r")
+    lines = infile.readlines()
+    infile.close()
+    outfile = open(fname, "w")
+    for line in lines:
+      if line[:5].lower()=="date:":
+        outfile.write(strftime("Date: %Y-%m-%d\n"))
+      elif line[:8].lower()=="version:":
+        y, m, d = localtime()[:3]
+        outfile.write("Version: %d.%d.%d\n" % (y-2010, m, d))
+      else:
+        outfile.write(line)
+    outfile.close()
+    
+DescriptionBuilder = Builder(action = updateDescription)
+
+############# R CMD Check
+
+def checkPackage(target, source, env):
+    """runs R CMD check to see if the package is CRAN conform"""
+    #00check.log
+                        
+############# putting it together: our tool environment
+
+env = Environment(tools = [],
+                  ENV = {'R_HOME' : os.environ['R_HOME']},
+                  BUILDERS = {'Rd' : RdBuilder, 'Namespace' : NamespaceBuilder, 'Description' : DescriptionBuilder})
+                  
+deb("Umgebung deklariert")
+
+############# define the targets of this directory
+############# by default, we build all targets.
+############# if a file name without extension is given as a target on the command line, we build the corresponding pdf 
+
+# what can we build from a R file in the data directory?
+filelist = [os.path.splitext(f) for f in os.listdir("./data")]
+dataCommentTargets = [name for (name,ext) in filelist if ext.lower()==".r"]
+deb("data/*.R: "+", ".join(dataCommentTargets))
+for name in dataCommentTargets:
+    env.Rd("man/"+name+".Rd", "data/"+name+".R")
+
+# what can we build from a R file in the R directory?
+filelist = [os.path.splitext(f) for f in os.listdir("./R")]
+roxygenTargets = [name for (name,ext) in filelist if ext.lower()==".r"]
+deb("R/*.R: "+ ", ".join(roxygenTargets))
+for name in roxygenTargets:
+    env.Rd("man/"+name+".Rd", "R/"+name+".R")
+env.Namespace("NAMESPACE", ["R/"+name+".R" for name in roxygenTargets])
+
+# always build the DESCRIPTION file, as it depends on the date
+env.Description("DESCRIPTION", "SConstruct")
+env.Precious("DESCRIPTION")
+env.AlwaysBuild("DESCRIPTION")

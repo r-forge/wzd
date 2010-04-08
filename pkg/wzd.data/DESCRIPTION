@@ -1,0 +1,12 @@
+Package: wzd.data
+Type: Package
+Title: Accompanying data package to the blog wagezudenken.blogspot.com
+Version: 0.4.8
+Date: 2010-04-08
+Author: Karsten Weinert
+Maintainer: Karsten Weinert <k.weinert@gmx.net>
+Description: The package features datasets from various topics; as
+    discussed on the blog.
+License: GPL (>= 3)
+LazyLoad: yes
+Depends: wzd
