@@ -19,7 +19,7 @@ under the terms of the GNU Free Documentation License only.}
 \value{an object of class "dbpedia"}
 \references{\url{http://wiki.dbpedia.org/Downloads34}}
 \author{Karsten Weinert \email{k.weinert@gmx.net}}
-\arguments{\item{api}{string pointing to download directory. Default is first to look at options("wzd.dbpedia.api") and,
+\arguments{\item{api}{string pointing to download directory. Default is first to look at options('wzd.dbpedia.api') and,
 if unset or empty, point to http://downloads.dbpedia.org/3.4/}
 }
 

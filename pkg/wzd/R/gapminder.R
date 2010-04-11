@@ -14,17 +14,17 @@
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
 gapminder <- function() {
   datasets <- data.frame(
-    row.names=c("gmPopulation", "gmTotalFertilityRate","gmPerCapitaCO2Emissions","gmIncomePerCapita","gmInfantMortalityRate",
-      "gmLifeExpectancyAtBirth","gmAdolescentFertilityRate","gmBirthsAttendedBySkilledHealthStaff","gmContraceptiveUse",
-      "gmCrudeBirthRate","gmMaternalMortalityRate","gmUnder5MortalityRate","gmCrudeDeathRate","gmPopulationGrowth",
-      "gmSugarConsumption","gmGDP","gmConsumerPricesIndex","gmGDPImplicitDeflator","gmCoalConsumption","gmHydroelectricityConsumption",
-      "gmNaturalGasConsumption","gmNuclearConsumption","gmOilConsumption","gmCoalProduction","gmElectricityGeneration",
-      "gmNaturalGasProduction","gmOilProduction","gmPrimaryEnergyConsumption","gmCO2Emissions","gmSulfurEmissions",
-      "gmTotalForestArea","gmPrimaryForestArea","gmPlantedForestArea","gmWoodRemoval","gmBiomassStockInForest",
-      "gmTotalWaterWithdrawal","gmSurfaceArea","gmBadTeethPerChild","gmPeopleLivingWithHIV","gmMalariaReportedCases",
-      "gmMalariaReportedDeaths","gmWorkingHoursPerWeek","gmUrbanPopulation","gmWomensAgeAtFirstMarriage","gmNumberOfBillionaires",
-      "gmGiniIndex","gmBroadbandSubscribers","gmCellPhones","gmPersonalComputers","gmPatentApplications","gmPatentsGranted",
-      "gmPatentsInForce","gmArmsExports","gmArmsImports","gmHumanDevelopmentIndex"),
+    row.names=c("gmPopulation", "gmTotalFertilityRate", "gmPerCapitaCO2Emissions", "gmIncomePerCapita", "gmInfantMortalityRate",
+      "gmLifeExpectancyAtBirth", "gmAdolescentFertilityRate", "gmBirthsAttendedBySkilledHealthStaff", "gmContraceptiveUse",
+      "gmCrudeBirthRate", "gmMaternalMortalityRate", "gmUnder5MortalityRate", "gmCrudeDeathRate", "gmPopulationGrowth",
+      "gmSugarConsumption", "gmGDP", "gmConsumerPricesIndex", "gmGDPImplicitDeflator", "gmCoalConsumption", "gmHydroelectricityConsumption",
+      "gmNaturalGasConsumption", "gmNuclearConsumption", "gmOilConsumption", "gmCoalProduction", "gmElectricityGeneration",
+      "gmNaturalGasProduction", "gmOilProduction", "gmPrimaryEnergyConsumption", "gmCO2Emissions", "gmSulfurEmissions",
+      "gmTotalForestArea", "gmPrimaryForestArea", "gmPlantedForestArea", "gmWoodRemoval", "gmBiomassStockInForest",
+      "gmTotalWaterWithdrawal", "gmSurfaceArea", "gmBadTeethPerChild", "gmPeopleLivingWithHIV", "gmMalariaReportedCases",
+      "gmMalariaReportedDeaths", "gmWorkingHoursPerWeek", "gmUrbanPopulation", "gmWomensAgeAtFirstMarriage", "gmNumberOfBillionaires",
+      "gmGiniIndex", "gmBroadbandSubscribers", "gmCellPhones", "gmPersonalComputers", "gmPatentApplications", "gmPatentsGranted",
+      "gmPatentsInForce", "gmArmsExports", "gmArmsImports", "gmHumanDevelopmentIndex"),
     key=c("phAwcNAVuyj0XOoBL_n5tAQ", "phAwcNAVuyj0TAlJeCEzcGQ", "phAwcNAVuyj1gkNuUEXOGag", "phAwcNAVuyj1jiMAkmq1iMg", 
       "phAwcNAVuyj0NpF2PTov2Cw", "phAwcNAVuyj2tPLxKvvnNPA", "pyj6tScZqmEdIphYUHxcdLg", "pyj6tScZqmEfKY9bk02DBYA", 
       "pyj6tScZqmEewsQOoKrtYJQ", "tUSeGJOQhafugwUvHvY-wLA", "pyj6tScZqmEcVezxiMlWaRw", "phAwcNAVuyj05ZR69usyQIg", 
@@ -49,18 +49,19 @@ gapminder <- function() {
   result
 }
 
-#' String representation of a gapminder object
+#' Print information on a gapminder S3 object
 #'
 #' Displays the names of available entities. For documentation of a specific dataset see the wzddata package.
 #' 
-#' @param obj         reference of the gapminder object
+#' @param x         reference of the gapminder object
+#' @param ...         unused (from generic)
 #' 
-#' @return string
+#' @return used for its side effect
 #' @seealso \code{gapminder} for a description of the datasource
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-print.gapminder <- function(obj, ...) {
-  df <- obj$datasets
+print.gapminder <- function(x, ...) {
+  df <- x$datasets
   print(paste("Gapminder data source object. ", dim(df)[1]," datasets available:", sep=""))
   print(strwrap(Reduce(function(x,y) paste(x,y, sep=", "), sort(rownames(df)))))
 }
@@ -76,13 +77,14 @@ print.gapminder <- function(obj, ...) {
 #' @param obj         a gapminder S3 object
 #' @param entity    identifies the dataset. Print the gapminder object to get a list of available entities
 #' @param output      define the type of output. Supported output formats "data.frame" (default), "xts" or "roxygen".
+#' @param ...         unused
 #'
 #' @return depends on the output parameter
 #' @references
 #' \url{http://www.gapminder.org}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-query.gapminder <- function(obj, entity, output="data.frame"){
+query.gapminder <- function(obj, entity, output="data.frame", ...){
   r <- try(obj$datasets[entity,], silent=TRUE)
   if (class(r)=="try-error") stop("Entity not found.")
   

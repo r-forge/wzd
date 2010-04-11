@@ -8,7 +8,6 @@
 \value{an object of class "ckan"}
 \references{\url{http://knowledgeforge.net/ckan/doc/ckan/api.html}}
 \author{Karsten Weinert \email{k.weinert@gmx.net}}
-\sectionTODOdefine datasets - nice tags: guardian, airport, format-csv, oft genug muss nur der Eintrag korrigiert werden
 \arguments{\item{api}{string pointing to the api url as parameter. Default is http://ckan.net}
 }
 

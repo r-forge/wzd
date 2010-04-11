@@ -1,7 +1,7 @@
 \name{query.gapminder}
 \alias{query.gapminder}
 \title{Downloads a dataset curated by Gapminder.}
-\usage{query.gapminder(obj, entity, output="data.frame")
+\usage{query.gapminder(obj, entity, output="data.frame", ...)
 }
 \description{Downloads a dataset curated by Gapminder.}
 \details{You can choose if you want the data as a data.frame or as a xts time series, of if
@@ -15,5 +15,6 @@ Therefore you will have to go to the source to find out the terms of use for the
 \arguments{\item{obj}{a gapminder S3 object}
 \item{entity}{identifies the dataset. Print the gapminder object to get a list of available entities}
 \item{output}{define the type of output. Supported output formats "data.frame" (default), "xts" or "roxygen".}
+\item{...}{unused}
 }
 

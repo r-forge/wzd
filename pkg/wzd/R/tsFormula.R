@@ -27,6 +27,7 @@ window.tsFormula <- function(z, ...) {
 # parameter für add.vertices - label, shape, colr, size, frame.color, label.dist, label.degree, label.family="serif", label.cex, label.font
 # http://lists.gnu.org/archive/html/igraph-help/2010-02/threads.html
 as.igraph.tsFormula <- function(z, parentVertex=-1, g=NULL, color.expr="white", color.parents="grey") {
+  if (!require(igraph)) stop("Could not load required library igraph")
   theGraph <- if (!is.null(g)) g else graph.empty(directed=FALSE)
   lenParents <- length(z$parents)
   labelExpr <- if (nchar(z$expr)==1) z$expr else "f"

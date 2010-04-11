@@ -2,7 +2,7 @@
 \alias{query.dbpedia}
 \title{Extracts datasets from the DBPEDIA project.}
 \usage{query.dbpedia(obj, dataset, infobox, output="data.frame", verbose=TRUE,
-    maxLines=65000)
+    maxLines=65000, ...)
 }
 \description{Extracts datasets from the DBPEDIA project.}
 \details{You can choose between predefined transformed datasets and your own extraction.
@@ -19,9 +19,10 @@ under the terms of the GNU Free Documentation License only.}
 \author{Karsten Weinert \email{k.weinert@gmx.net}}
 \arguments{\item{obj}{a dbpedia S3 object}
 \item{dataset}{identifies the dataset. Print the dbpedia object to get a list of available entities}
-\item{entity}{identifies the dataset. Print the dbpedia object to get a list of available entities}
+\item{infobox}{identifies the dataset. Print the dbpedia object to get a list of available entities}
 \item{output}{define the type of output. Supported output formats "data.frame" (default) or "roxygen".}
 \item{verbose}{prints a dot after every 100 000 lines so you know your machine is awake}
 \item{maxLines}{parameter to readLines, maximum number of lines to read at a time (default 65000)}
+\item{...}{unused}
 }
 

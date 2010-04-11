@@ -1,15 +1,16 @@
 \name{query}
 \alias{query}
 \title{Generic S3 method to query different data sources.}
-\usage{query(x, ...)
+\usage{query(obj, ...)
 }
 \description{Generic S3 method to query different data sources.}
-\details{CKAN describes itself as a registry of open data and content packages. CKAN provides ways to find, download and share open content and data.}
+\details{This method is implemented for various datasources of this package, see below.}
 \value{depends on the data source}
 \seealso{\code{query.mediawiki} for querying mediawiki}
 \seealso{\code{query.gapminder} for querying gapminder datasets}
 \seealso{\code{query.ckan} for querying ckan data entities}
 \author{Karsten Weinert \email{k.weinert@gmx.net}}
-\arguments{\item{x}{data source object}
+\arguments{\item{obj}{data source object}
+\item{...}{no default use}
 }
 

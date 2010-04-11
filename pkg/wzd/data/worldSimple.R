@@ -12,12 +12,15 @@
 #' @examples
 #' data(worldSimple)
 #' spplot(worldSimple, "POP2005")
-if (!require(sp)) stop("Could not load required library sp")
-if (!require(rgdal)) stop("Could not load required library rgdal")
-if (!file.exists("./worldSimple")) {
-  res <- unzip("worldSimple.zip", files = NULL, list = FALSE, overwrite = TRUE, junkpaths = FALSE, exdir = "worldSimple")
-  if (length(res)==0) stop("Could not extract map data from zip file. No write access?")
-}
+worldSimple <- local({
+  # extract to tempdir?
+  if (!require(sp)) stop("Could not load required library sp")
+  if (!require(rgdal)) stop("Could not load required library rgdal")
+  if (!file.exists("./worldSimple")) {
+    res <- unzip("worldSimple.zip", files = NULL, list = FALSE, overwrite = TRUE, junkpaths = FALSE, exdir = "worldSimple")
+    if (length(res)==0) stop("Could not extract map data from zip file. No write access?")
+  }
 
-worldSimple <- readOGR("worldSimple", "TM_WORLD_BORDERS_SIMPL-0.3")
-worldSimple <- spChFIDs(worldSimple, as.character(worldSimple$ISO3))
+  res <- readOGR("worldSimple", "TM_WORLD_BORDERS_SIMPL-0.3")
+  spChFIDs(res, as.character(res$ISO3))
+})

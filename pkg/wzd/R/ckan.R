@@ -9,25 +9,26 @@
 #' \url{http://knowledgeforge.net/ckan/doc/ckan/api.html}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-#' @TODO define datasets - nice tags: guardian, airport, format-csv, oft genug muss nur der Eintrag korrigiert werden
 ckan <- function(api="http://ckan.net") {
+  #define datasets - nice tags: guardian, airport, format-csv, oft genug muss nur der Eintrag korrigiert werden
   result <- list(api=api)
   class(result) <- "ckan"
   
   result
 }
 
-#' String representation of a ckan object
+#' Print information on a ckan S3 object
 #'
 #' Displays the API url.
 #' 
-#' @param obj         reference of the ckan object
+#' @param x           reference of the ckan object
+#' @param ...         unused (from generic)
 #' 
-#' @return string
+#' @return used for its side effect
 #' @seealso \code{ckan} for a description of the datasource
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-print.ckan <- function(obj, ...) print(paste("CKAN data source object (", obj$api,")", sep=""))
+print.ckan <- function(x, ...) cat(paste('CKAN data source object (', x$api,')', sep=""))
   
 #' Queries the CKAN data registry using its API.
 #'
@@ -35,20 +36,23 @@ print.ckan <- function(obj, ...) print(paste("CKAN data source object (", obj$ap
 #' 
 #' The output is considered as UTF-8.
 #'
-#' @param entity      specifies the entity. E.g. "browser_stats" looks for the data package "browser_stats" from W3Schools.
+#' @param obj         reference of the ckan object
+#' @param entity      specifies the entity. E.g. 'browser_stats' looks for the data package 'browser_stats' from W3Schools.
 #' @param output      determines the form of the output. 
-#'                    "json" (default) returns package information as nested list
-#'                    "roxygen" returns a roxygen compatible documentation string of the dataset
-#'                    "url" returns a url where the data resides
-#'                    "data.frame" returns the actual data
+#'                    'json' (default) returns package information as nested list
+#'                    'roxygen' returns a roxygen compatible documentation string of the dataset
+#'                    'url' returns a url where the data resides
+#'                    'data.frame' returns the actual data
+#' @param ...         unused
 #' 
 #' @return depending on the parameter output, a nested list, a string, or a data.frame
 #' @references 
 #' \url{http://knowledgeforge.net/ckan/doc/ckan/api.html}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-query.ckan <- function(obj, entity, output="json" ) {
-  if (!require(RJSONIO)) error("Could not load required library RJSONIO (install from Omegahat)")
+
+query.ckan <- function(obj, entity, output="json", ... ) {
+  if (!require(RJSONIO)) stop("Could not load required library RJSONIO (install from Omegahat)")
   url <- paste(obj$api, "/api/rest/package/", entity, sep="")
   res <- fromJSON(url)
 

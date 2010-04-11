@@ -13,7 +13,7 @@
 #' and the GNU Free Documentation License. All DBpedia releases up to and including release 3.3 are licensed 
 #' under the terms of the GNU Free Documentation License only.
 #'
-#' @param api string pointing to download directory. Default is first to look at options("wzd.dbpedia.api") and,
+#' @param api string pointing to download directory. Default is first to look at options('wzd.dbpedia.api') and,
 #'            if unset or empty, point to http://downloads.dbpedia.org/3.4/
 #' 
 #' @return an object of class "dbpedia"
@@ -46,19 +46,20 @@ dbpedia <- function(api="") {
 #'
 #' Displays the names of available entities. For documentation of a specific dataset see the wzddata package.
 #' 
-#' @param obj         reference of the dbpedia object
+#' @param x           reference of the dbpedia object
+#' @param ...         unused (from generic)
 #' 
 #' @return string
 #' @seealso \code{dbpedia} for a description of the datasource
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-print.dbpedia <- function(obj, ...) {
+print.dbpedia <- function(x, ...) {
   cat("Dbpedia data source object. \n")
-  df <- rownames(obj$datasets)
+  df <- rownames(x$datasets)
   cat(paste("\n", length(df)," datasets defined:\n", sep=""))
   cat(df)
   cat("\n")
-  df <- obj$entities
+  df <- x$entities
   cat(paste("\n", length(df)," predefined entities available:\n", sep=""))
   cat(df)
   cat("\n")
@@ -79,17 +80,18 @@ print.dbpedia <- function(obj, ...) {
 #'
 #' @param obj       a dbpedia S3 object
 #' @param dataset   identifies the dataset. Print the dbpedia object to get a list of available entities
-#' @param entity    identifies the dataset. Print the dbpedia object to get a list of available entities
+#' @param infobox    identifies the dataset. Print the dbpedia object to get a list of available entities
 #' @param output    define the type of output. Supported output formats "data.frame" (default) or "roxygen".
 #' @param verbose   prints a dot after every 100 000 lines so you know your machine is awake
 #' @param maxLines  parameter to readLines, maximum number of lines to read at a time (default 65000)
+#' @param ...       unused
 #'
 #' @return depends on the output parameter
 #' @references
 #' \url{http://wiki.dbpedia.org/Datasets}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-query.dbpedia <- function(obj, dataset, infobox=NULL, output="data.frame", verbose=TRUE, maxLines=65000){
+query.dbpedia <- function(obj, dataset, infobox=NULL, output="data.frame", verbose=TRUE, maxLines=65000, ...){
   ds <- try(obj$datasets[dataset, "file"], silent=TRUE)
   if (class(ds)=="try-error") stop(paste("Dataset ", ds, " not found.", sep=""))
   infile <- file.path(obj$api, ds)
