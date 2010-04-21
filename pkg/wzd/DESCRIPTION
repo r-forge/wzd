@@ -1,8 +1,8 @@
 Package: wzd
 Type: Package
 Title: Accompanying package to the blog wagezudenken.blogspot.com
-Version: 0.4.11
-Date: 2010-04-11
+Version: 0.4.21
+Date: 2010-04-21
 Author: Karsten Weinert
 Maintainer: Karsten Weinert <k.weinert@gmx.net>
 Description: The package features datasets from various topics, data
