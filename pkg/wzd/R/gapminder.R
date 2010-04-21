@@ -40,7 +40,7 @@ gapminder <- function() {
       "pyj6tScZqmEfUXdC83YSzfw", "pyj6tScZqmEd5FA9xlfO9eA", "pyj6tScZqmEdMioz5VJKXHw", "pyj6tScZqmEe371ZVZl73eA", 
       "pyj6tScZqmEeTIhjRrVQtQA", "pyj6tScZqmEfnPl7VRfT9WA", "tyadrylIpQ1K_iHP407374Q"),
     dataGid=0,
-    docGid=c(2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 
+    docGid=c(2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 
       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), 
     stringsAsFactors=FALSE)
   result <- list(api="http://spreadsheets.google.com/pub?key=", datasets=datasets)
@@ -107,7 +107,9 @@ query.gapminder <- function(obj, entity, output="data.frame", ...){
   if (output=="data.frame") {
     dataRaw <- read.csv(theUrl, encoding="UTF-8", na.strings=c("..", "-"), stringsAsFactor=TRUE)
     transformYear <- function(s) as.numeric(substring(s,2))
-    dataTransformed <- do.call("rbind", lapply(colnames(dataRaw)[-1], function(x) {data.frame(ids,transformYear(x), dataRaw[,x])}))
+    #return(dataRaw)
+    dataTransformed <- do.call("rbind", lapply(colnames(dataRaw)[-1], function(x) {data.frame(dataRaw[,1], transformYear(x), dataRaw[,x])}))
+    #return(dataTransformed)
     names(dataTransformed) <- c("Country", "Year", "Value")
     if (!is.numeric(dataTransformed[,3])) {
       transformVal <- function(s) as.numeric(gsub("[',]", '', s))
