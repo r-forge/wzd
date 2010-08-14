@@ -6,6 +6,13 @@
 #'
 #' Please note that neither Gapminder nor the package developer/maintainer are the data provider, except for a few cases.
 #' Therefore you will have to go to the source to find out the terms of use for the specific indicator.
+#' 
+#' Todo - refactor
+#' - query sollte nur data.frame zurückgeben, angereichert mit ISO3-Code
+#' - query sollte Vectoren von entities zulassen und diese gut mergen (nach ISO3 und Jahr)
+#' - neue Methode getDataScript sollte den Quellcode für ein Datenskript zurückgeben
+#' - die Erzeugung einer Zeitreihe (xts-Objekt) sollte eine separate, generische Funktion sein (vielleicht gibt es die schon)
+#' - eine neue generische Funktion zum Hinzufügen der Daten zu einem SpatialPolygon
 #'
 #' @return an object of class "gapminder"
 #' @references 
@@ -51,10 +58,10 @@ gapminder <- function() {
 
 #' Print information on a gapminder S3 object
 #'
-#' Displays the names of available entities. For documentation of a specific dataset see the wzddata package.
+#' Displays the names of available entities. For documentation of a specific dataset see the wzd.data package.
 #' 
 #' @param x         reference of the gapminder object
-#' @param ...         unused (from generic)
+#' @param ...       unused (from generic)
 #' 
 #' @return used for its side effect
 #' @seealso \code{gapminder} for a description of the datasource
@@ -62,91 +69,107 @@ gapminder <- function() {
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
 print.gapminder <- function(x, ...) {
   df <- x$datasets
-  print(paste("Gapminder data source object. ", dim(df)[1]," datasets available:", sep=""))
+  print(paste("Gapminder data source object. ", dim(df)[1]," datasets supported:", sep=""))
   print(strwrap(Reduce(function(x,y) paste(x,y, sep=", "), sort(rownames(df)))))
 }
   
-#' Downloads a dataset curated by Gapminder.
-#'
-#' You can choose if you want the data as a data.frame or as a xts time series, of if
-#' you want the documentation of the data in a roxygen compatible documentation string.
+#' Downloads one or several dataset(s) curated by Gapminder.
 #'
 #' Please note that neither Gapminder nor the package developer/maintainer are the data provider, except for a few cases.
 #' Therefore you will have to go to the source to find out the terms of use for the specific indicator.
 #'
 #' @param obj         a gapminder S3 object
-#' @param entity    identifies the dataset. Print the gapminder object to get a list of available entities
-#' @param output      define the type of output. Supported output formats "data.frame" (default), "xts" or "roxygen".
-#' @param ...         unused
+#' @param entity      identifies the dataset. Can be a string or a list of strings. 
+#'                    Use getProperty(gapminder(), "items") to get a list of available entities.
 #'
-#' @return depends on the output parameter
+#' @return A data.frame, object with Columns Country, ISO3, Year, and one column for each entity.
 #' @references
 #' \url{http://www.gapminder.org}
 #' @export
 #' @author Karsten Weinert \email{k.weinert@@gmx.net}
-query.gapminder <- function(obj, entity, output="data.frame", ...){
+query.gapminder <- function(obj, entity){
   r <- try(obj$datasets[entity,], silent=TRUE)
   if (class(r)=="try-error") stop("Entity not found.")
   
   theUrl <- paste(obj$api,r$key, "&output=csv","&gid=", sep="")
   theUrl <- paste(theUrl, if (output=="roxygen") r$docGid else r$dataGid, sep="")
-
-  if (output=="xts") {
-    if (!require(xts)) stop("Could not load required library xts")
-    dataRaw <- read.csv(theUrl, encoding="UTF-8", na.strings=c("..", "-"), stringsAsFactor=FALSE)
-    dataTransformed <- t(as.matrix(dataRaw[,2:ncol(dataRaw)]))
-    if (!is.numeric(dataTransformed[1,])) {
-      dimSaved <- dim(dataTransformed)
-      dataTransformed <- as.numeric(gsub("[,']", '', dataTransformed))
-      dim(dataTransformed) <- dimSaved
-    }
-    colnames(dataTransformed) <- dataRaw[,1]
-    return(xts(dataTransformed, order.by=as.Date(paste(colnames(dataRaw)[2:ncol(dataRaw)],"-06-15", sep=""), format="X%Y-%m-%d")))
-  }
   
-  if (output=="data.frame") {
-    dataRaw <- read.csv(theUrl, encoding="UTF-8", na.strings=c("..", "-"), stringsAsFactor=TRUE)
-    transformYear <- function(s) as.numeric(substring(s,2))
-    #return(dataRaw)
-    dataTransformed <- do.call("rbind", lapply(colnames(dataRaw)[-1], function(x) {data.frame(dataRaw[,1], transformYear(x), dataRaw[,x])}))
-    #return(dataTransformed)
-    names(dataTransformed) <- c("Country", "Year", "Value")
-    if (!is.numeric(dataTransformed[,3])) {
-      transformVal <- function(s) as.numeric(gsub("[',]", '', s))
-      dataTransformed <- transform(dataTransformed, Value=transformVal(Value))
-    } 
-    names(dataTransformed) <- c("Country", "Year", entity)
-    return(dataTransformed)
-  }
-  
-  if (output=="roxygen") {
-    docData <- read.csv(theUrl, header=FALSE, encoding="UTF-8", stringsAsFactor=FALSE)[,c(2,3)]
-    transformRow <- function(docRow) 
-      if(docRow[2]=="") 
-        c("#' ", paste("#' ",docRow[1], sep=""))
-      else 
-        strwrap(paste(docRow[1], ": ", docRow[2], sep=""), prefix="#' ")
-    docData <- unlist(apply(docData, 1, transformRow))
-    docData <- docData[2:length(docData)]
-    docData <- c(
-      docData,
-      "#' ",
-      "#' Please note that neither Gapminder nor the package developer/maintainer are the data provider, except for a few cases.",
-      "#' Therefore you will have to go to the source to find out the terms of use for the specific indicator.",
-      "#' ",
-      paste("#' @name ", entity, "-data", sep=""),
-      paste("#' @aliases ", entity, sep=""),
-      "#' @references",
-      "#' \\url{http://www.gapminder.org}",
-      paste("#' \\url{",theUrl,"}", sep=""),
-      "#' @docType data",
-      "#' @author Karsten Weinert \\email{k.weinert@@gmx.net}")
-    docData <- c(docData,
-      paste(entity, " <- local({", sep=""),
-      '  if (!require(wzd)) stop("Could not load required library wzd (install from r-forge)")',
-      paste('  query(gapminder(), "', entity, '", output="data.frame")', sep=""),
-      "})",
-      "")
-    return(paste(docData, sep="\n"))
-  }
+  dataRaw <- read.csv(theUrl, encoding="UTF-8", na.strings=c("..", "-"), stringsAsFactor=TRUE)
+  transformYear <- function(s) as.numeric(substring(s,2))
+  #return(dataRaw)
+  dataTransformed <- do.call("rbind", lapply(colnames(dataRaw)[-1], function(x) {data.frame(dataRaw[,1], transformYear(x), dataRaw[,x])}))
+  #return(dataTransformed)
+  names(dataTransformed) <- c("Country", "Year", "Value")
+  if (!is.numeric(dataTransformed[,3])) {
+    transformVal <- function(s) as.numeric(gsub("[',]", '', s))
+    dataTransformed <- transform(dataTransformed, Value=transformVal(Value))
+  } 
+  names(dataTransformed) <- c("Country", "Year", entity)
+  return(dataTransformed)
 }
+
+#' Roxygen-enriched R code for loading a specific dataset
+#'
+#' This method accesses the gapminder documentation for the provided entity and returns 
+#' a character string with an R script, annotated in Roxygen style, that loads the data.
+#'
+#' It is used to create the R scripts in the data directory of wzd.data, which enable
+#' the user to load the gapminder dataset by calling data(gmXXX), where XXX describes the entity.
+#'
+#' Please note that neither Gapminder nor the package developer/maintainer are the data provider, except for a few cases.
+#' Therefore you will have to go to the source to find out the terms of use for the specific indicator.
+#'
+#' @param obj         a gapminder S3 object
+#' @param entity      identifies the dataset. Print the gapminder object to get a list of available entities
+#'
+#' @return character string containing an R script, enriched with Roxygen documentation.
+#' @references
+#' \url{http://www.gapminder.org}
+#' @export
+#' @author Karsten Weinert \email{k.weinert@@gmx.net}
+getDataScript.gapminder <-  function(obj, entity) {
+  docData <- read.csv(theUrl, header=FALSE, encoding="UTF-8", stringsAsFactor=FALSE)[,c(2,3)]
+  transformRow <- function(docRow) 
+    if(docRow[2]=="") 
+      c("#' ", paste("#' ",docRow[1], sep=""))
+    else 
+      strwrap(paste(docRow[1], ": ", docRow[2], sep=""), prefix="#' ")
+  docData <- unlist(apply(docData, 1, transformRow))
+  docData <- docData[2:length(docData)]
+  docData <- c(
+    docData,
+    "#' ",
+    "#' Please note that neither Gapminder nor the package developer/maintainer are the data provider, except for a few cases.",
+    "#' Therefore you will have to go to the source to find out the terms of use for the specific indicator.",
+    "#' ",
+    paste("#' @name ", entity, "-data", sep=""),
+    paste("#' @aliases ", entity, sep=""),
+    "#' @references",
+    "#' \\url{http://www.gapminder.org}",
+    paste("#' \\url{",theUrl,"}", sep=""),
+    "#' @docType data",
+    "#' @author Karsten Weinert \\email{k.weinert@@gmx.net}")
+  docData <- c(docData,
+    paste(entity, " <- local({", sep=""),
+    '  if (!require(wzd)) stop("Could not load required library wzd (install from r-forge)")',
+    paste('  query(gapminder(), "', entity, '", output="data.frame")', sep=""),
+    "})",
+    "")
+  return(paste(docData, sep="\n"))
+}
+ 
+#' Data source information for gapminder 
+#'
+#' This method provides information which entities the gapminder API supports.
+#'
+#' Please note that neither Gapminder nor the package developer/maintainer are the data provider, except for a few cases.
+#' Therefore you will have to go to the source to find out the terms of use for the specific indicator.
+#'
+#' @param obj         a gapminder S3 object
+#'
+#' @return a vector of strings describing the available entities.
+#' @references
+#' \url{http://www.gapminder.org}
+#' @export
+#' @author Karsten Weinert \email{k.weinert@@gmx.net}  
+listEntities.gapminder <- function(obj) rownames(obj$datasets)
