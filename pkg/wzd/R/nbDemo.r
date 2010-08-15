@@ -5,6 +5,7 @@ nbDemo <- function() {
    )
 }
 
+# todo write doc
 wDemo <- function(w=plotWidget) widgetView(deparse(substitute(w)), w())
 
 fileWidget <- function() {
